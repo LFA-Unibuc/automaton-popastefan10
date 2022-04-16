@@ -7,6 +7,14 @@ class Automaton():
 		self.config_file = config_file
 		print("Hi, I'm an automaton!")
 
+	def get_start_state(self):
+		"""Return a String
+		"""
+		for state in self.automaton["States"].keys():
+			if self.automaton["States"][state] == "S":
+				return state
+		return ""
+
 	def validate(self):
 		"""Return a Boolean
 
