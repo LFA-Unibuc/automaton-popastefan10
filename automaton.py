@@ -5,7 +5,7 @@ class Automaton():
 
 	def __init__(self, config_file):
 		self.config_file = config_file
-		print("Hi, I'm an automaton!")
+		print("Hi, I'm an self.automaton!")
 
 	def validate(self):
 		"""Return a Boolean
@@ -16,52 +16,13 @@ class Automaton():
 
 		f = open(self.config_file)
 		input_str = f.read()
-		automaton = self.read_input(input_str)
 
-		# verific sa existe o unica stare initiala
-		initial_states = 0
-		for state in automaton["States"].keys():
-			initial_states += (automaton["States"][state] == "S")
-			if initial_states > 1:
-				raise Exception('Prea multe stari initiale')
-		if initial_states == 0:
-			raise Exception('Nu exista nicio stare initiala')
-
-		# # validez tranzitiile
-		for state in automaton["Transitions"].keys():
-			if state not in automaton["States"].keys():
-				raise Exception(f'Starea "{state}" nu apare in States')
-			
-			for word in automaton["Transitions"][state].keys():
-				if word not in automaton["Sigma"]:
-					raise Exception(f'Cuvantul "{word}" nu apare in Sigma')
-				
-				end_state = automaton["Transitions"][state][word]
-				if end_state not in automaton["States"].keys():
-					raise Exception(f'Starea "{end_state}" nu apare in States')
-
-		return True
-
-	def accepts_input(self, input_str):
-		"""Return a Boolean
-
-		Returns True if the input is accepted,
-		and it returns False if the input is rejected.
-		"""
-		pass
-
-	def read_input(self, input_str):
-		"""Return the automaton's final configuration
-		
-		If the input is rejected, the method raises a
-		RejectionException.
-		"""
-
+		# parsez input-ul
 		sections = ["Sigma", "States", "Transitions"]
-		automaton = dict()
-		automaton["Sigma"] = list()
-		automaton["States"] = dict()
-		automaton["Transitions"] = dict()
+		self.automaton = dict()
+		self.automaton["Sigma"] = list()
+		self.automaton["States"] = dict()
+		self.automaton["Transitions"] = dict()
 
 		inside_section = False
 		current_section = ''
@@ -110,16 +71,16 @@ class Automaton():
 						if current_section == "Sigma":
 							if len(line) > 1:
 								raise Exception(f'{line_index}: Cuvintele din Sigma trebuie sa fie pe linii diferite')
-							automaton["Sigma"].append(line[0])
+							self.automaton["Sigma"].append(line[0])
 						elif current_section == "States":
 							if len(line) == 1:
 								# stare simpla
-								automaton["States"][line[0]] = ""
+								self.automaton["States"][line[0]] = ""
 							elif len(line) == 2:
 								# stare speciala
 								if line[1] != "F" and line[1] != "S":
 									raise Exception(f'{line_index}: Starile speciale trebuie sa fie initiale (S) sau finale (F)')
-								automaton["States"][line[0]] = line[1]
+								self.automaton["States"][line[0]] = line[1]
 							else:
 								raise Exception(f'{line_index}: Liniile din sectiunea States trebuie sa contina maxim 2 cuvinte')
 						elif current_section == 'Transitions':
@@ -127,11 +88,49 @@ class Automaton():
 								raise Exception(f'{line_index}: Liniile din sectiunea Transitions trebuie sa contina fix 3 cuvinte')
 
 							start_state, word, end_state = line
-							if start_state not in automaton["Transitions"]:
-								automaton["Transitions"][start_state] = dict()
-							automaton["Transitions"][start_state][word] = end_state
-	
-		return automaton 
+							if start_state not in self.automaton["Transitions"]:
+								self.automaton["Transitions"][start_state] = dict()
+							self.automaton["Transitions"][start_state][word] = end_state
+
+		# verific sa existe o unica stare initiala
+		initial_states = 0
+		for state in self.automaton["States"].keys():
+			initial_states += (self.automaton["States"][state] == "S")
+			if initial_states > 1:
+				raise Exception('Prea multe stari initiale')
+		if initial_states == 0:
+			raise Exception('Nu exista nicio stare initiala')
+
+		# validez tranzitiile
+		for state in self.automaton["Transitions"].keys():
+			if state not in self.automaton["States"].keys():
+				raise Exception(f'Starea "{state}" nu apare in States')
+			
+			for word in self.automaton["Transitions"][state].keys():
+				if word not in self.automaton["Sigma"]:
+					raise Exception(f'Cuvantul "{word}" nu apare in Sigma')
+				
+				end_state = self.automaton["Transitions"][state][word]
+				if end_state not in self.automaton["States"].keys():
+					raise Exception(f'Starea "{end_state}" nu apare in States')
+
+		return True
+
+	def accepts_input(self, input_str):
+		"""Return a Boolean
+
+		Returns True if the input is accepted,
+		and it returns False if the input is rejected.
+		"""
+		pass
+
+	def read_input(self, input_str):
+		"""Return the self.automaton's final configuration
+		
+		If the input is rejected, the method raises a
+		RejectionException.
+		"""
+		pass
 
 if __name__ == "__main__":
 	a = Automaton('my_config.txt')
