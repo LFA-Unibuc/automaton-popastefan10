@@ -5,7 +5,7 @@ class Automaton():
 
 	def __init__(self, config_file):
 		self.config_file = config_file
-		print("Hi, I'm an self.automaton!")
+		print("Hi, I'm an automaton!")
 
 	def validate(self):
 		"""Return a Boolean
