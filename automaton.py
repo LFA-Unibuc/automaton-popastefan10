@@ -15,6 +15,9 @@ class Automaton():
 				return state
 		return ""
 
+	def is_final_state(self, state):
+		return self.automaton["States"].get(state) == "F"
+
 	def validate(self):
 		"""Return a Boolean
 
@@ -109,16 +112,21 @@ class Automaton():
 		if initial_states == 0:
 			raise Exception('Nu exista nicio stare initiala')
 
+		# starile care nu au tranzitii vor avea un dictionar gol
+		for state in self.automaton["States"].keys():
+			if self.automaton["Transitions"].get(state) is None:
+				self.automaton["Transitions"][state] = dict()
+
 		# validez tranzitiile
 		for state in self.automaton["Transitions"].keys():
 			if state not in self.automaton["States"].keys():
 				raise Exception(f'Starea "{state}" nu apare in States')
-			
-			for word in self.automaton["Transitions"][state].keys():
-				if word not in self.automaton["Sigma"]:
-					raise Exception(f'Cuvantul "{word}" nu apare in Sigma')
+
+			for token in self.automaton["Transitions"][state].keys():
+				if token not in self.automaton["Sigma"]:
+					raise Exception(f'Cuvantul "{token}" nu apare in Sigma')
 				
-				end_state = self.automaton["Transitions"][state][word]
+				end_state = self.automaton["Transitions"][state][token]
 				if end_state not in self.automaton["States"].keys():
 					raise Exception(f'Starea "{end_state}" nu apare in States')
 
