@@ -1,7 +1,25 @@
-from sqlalchemy import false
+from sqlalchemy import String, false
 
 
 class Automaton():
+	"""
+	self.automaton (dict): contine elementele automatonului
+		key (String): "Sigma" / "States" / "Transitions"
+		
+		self.automaton["Sigma"] (list): contine token-urile din care este alcatuit alfabetul
+
+		self.automaton["States"] (dict): contine informatii despre starile automatonului
+			key (String): numele unei stari
+			value (String): "S" (starea de start) / "F" (stare finala) / "" (stare normala)
+
+		self.automaton["Transitions"] (dict): contine tranzitiile
+			key (String): starea de inceput a unei tranzitii
+			value (dict): tranzitiile care incep din aceasta stare
+
+			self.automaton["Transitions"][start_state] (dict): tranzitiile care inep din start_state
+				key (String): token din alfabet
+				value (list): starile in care ajungi daca pornesti din start_state cu token
+	"""
 
 	def __init__(self, config_file):
 		self.config_file = config_file
@@ -101,7 +119,9 @@ class Automaton():
 							start_state, word, end_state = line
 							if start_state not in self.automaton["Transitions"]:
 								self.automaton["Transitions"][start_state] = dict()
-							self.automaton["Transitions"][start_state][word] = end_state
+							if self.automaton["Transitions"][start_state].get(word) is None:
+								self.automaton["Transitions"][start_state][word] = list()
+							self.automaton["Transitions"][start_state][word].append(end_state)
 
 		# verific sa existe o unica stare initiala
 		initial_states = 0
@@ -126,9 +146,10 @@ class Automaton():
 				if token not in self.automaton["Sigma"]:
 					raise Exception(f'Cuvantul "{token}" nu apare in Sigma')
 				
-				end_state = self.automaton["Transitions"][state][token]
-				if end_state not in self.automaton["States"].keys():
-					raise Exception(f'Starea "{end_state}" nu apare in States')
+				end_states = self.automaton["Transitions"][state][token]
+				for end_state in end_states:
+					if end_state not in self.automaton["States"].keys():
+						raise Exception(f'Starea "{end_state}" nu apare in States')
 
 		return True
 
