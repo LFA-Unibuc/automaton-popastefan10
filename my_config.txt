@@ -11,7 +11,7 @@ End
 # comment lines ( skip them )
 #
 States :
-    q0, S
+    q0, SF
     q1
     q2, F
 End
