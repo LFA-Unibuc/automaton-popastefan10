@@ -29,12 +29,12 @@ class Automaton():
 		"""Return a String
 		"""
 		for state in self.automaton["States"].keys():
-			if self.automaton["States"][state] == "S":
+			if "S" in self.automaton["States"][state]:
 				return state
 		return ""
 
 	def is_final_state(self, state):
-		return self.automaton["States"].get(state) == "F"
+		return "F" in self.automaton["States"].get(state)
 
 	def validate(self):
 		"""Return a Boolean
@@ -105,13 +105,15 @@ class Automaton():
 							if len(line) == 1:
 								# stare simpla
 								self.automaton["States"][line[0]] = ""
-							elif len(line) == 2:
+							elif len(line) <= 3:
 								# stare speciala
-								if line[1] != "F" and line[1] != "S":
-									raise Exception(f'{line_index}: Starile speciale trebuie sa fie initiale (S) sau finale (F)')
-								self.automaton["States"][line[0]] = line[1]
+								state_types = "".join(list(set(line[1:])))
+								for state_type in state_types:
+									if state_type not in "SF":
+										raise Exception(f'{line_index}: Starile speciale pot fi initiale (S) sau finale (F)')
+								self.automaton["States"][line[0]] = state_types
 							else:
-								raise Exception(f'{line_index}: Liniile din sectiunea States trebuie sa contina maxim 2 cuvinte')
+								raise Exception(f'{line_index}: Liniile din sectiunea States trebuie sa contina maxim 3 cuvinte')
 						elif current_section == 'Transitions':
 							if len(line) != 3:
 								raise Exception(f'{line_index}: Liniile din sectiunea Transitions trebuie sa contina fix 3 cuvinte')
@@ -126,7 +128,7 @@ class Automaton():
 		# verific sa existe o unica stare initiala
 		initial_states = 0
 		for state in self.automaton["States"].keys():
-			initial_states += (self.automaton["States"][state] == "S")
+			initial_states += ("S" in self.automaton["States"][state])
 			if initial_states > 1:
 				raise Exception('Prea multe stari initiale')
 		if initial_states == 0:
