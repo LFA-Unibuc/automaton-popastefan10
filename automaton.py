@@ -31,7 +31,7 @@ class Automaton():
 		for state in self.automaton["States"].keys():
 			if "S" in self.automaton["States"][state]:
 				return state
-		return ""
+		return None
 
 	def is_final_state(self, state):
 		return "F" in self.automaton["States"].get(state)
