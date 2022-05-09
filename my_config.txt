@@ -1,0 +1,28 @@
+#
+# comment lines ( skip them )
+#
+Sigma :
+    a
+    b
+    c
+    d
+End
+#
+# comment lines ( skip them )
+#
+States :
+    q0, SF
+    q1
+    q2, F
+End
+#
+# comment lines ( skip them )
+# 
+# a^n b c^p d
+#
+Transitions :
+    q0, a, q0
+    q0, b, q1
+    q1, c, q1
+    q1, d, q2
+End
